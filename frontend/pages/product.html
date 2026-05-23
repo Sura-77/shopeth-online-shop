@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — ShopEth</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    .main-img-wrap {
+      aspect-ratio: 1;
+      background: var(--ivory-dk);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .main-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb {
+      width: 72px; height: 72px; border-radius: var(--radius-sm);
+      object-fit: cover; cursor: pointer; border: 2px solid transparent;
+      transition: var(--transition); background: var(--ivory-dk);
+    }
+    .thumb:hover, .thumb.active { border-color: var(--amber); }
+    .price-tag { font-family: var(--font-head); font-size: 2rem; color: var(--brown); }
+    .review-stars { color: var(--amber); letter-spacing: 2px; }
+    .section-divider { border-bottom: 2px solid var(--ivory-dk); padding-bottom: .5rem; margin-bottom: 1.25rem; font-family: var(--font-head); }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ─────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">Shop<span>Eth</span></a>
+    <div class="navbar-links">
+      <a href="index.html">Products</a>
+      <a href="cart.html">Cart</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="nav-auth-links" style="display:flex;align-items:center;gap:8px;"></div>
+      <a href="cart.html" class="navbar-cart">
+        🛒 <span id="cart-count" class="cart-badge hidden">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main Content ───────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+
+    <!-- Loading state -->
+    <div id="loading-state" class="text-center py-5">
+      <div class="spinner-border" style="color:var(--amber);width:3rem;height:3rem;" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+    </div>
+
+    <!-- Not found state -->
+    <div id="not-found-state" class="d-none">
+      <div class="alert alert-warning d-flex align-items-center gap-3" role="alert">
+        <span style="font-size:1.5rem;">⚠️</span>
+        <div>
+          <strong>Product not found.</strong> It may have been removed or is no longer available.
+          <a href="index.html" class="ms-2 fw-semibold" style="color:var(--amber);">← Back to Products</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product detail -->
+    <div id="product-detail" class="d-none">
+
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" id="breadcrumb-nav">
+          <li class="breadcrumb-item"><a href="index.html" style="color:var(--amber);">Home</a></li>
+        </ol>
+      </nav>
+
+      <div class="row g-5">
+        <!-- ── Left: Images ──────────────────────────────── -->
+        <div class="col-md-6">
+          <div class="main-img-wrap mb-3" id="main-img-wrap">
+            <span id="img-placeholder">📦</span>
+          </div>
+          <div class="d-flex gap-2 mt-2 flex-wrap" id="thumb-row"></div>
+        </div>
+
+        <!-- ── Right: Info ───────────────────────────────── -->
+        <div class="col-md-6">
+          <div class="product-card-category mb-1" id="detail-category"></div>
+          <h1 class="fs-2 fw-bold mb-2" style="font-family:var(--font-head);" id="detail-name"></h1>
+
+          <!-- Rating -->
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="review-stars" id="detail-stars"></span>
+            <span class="text-muted small" id="detail-rating-text"></span>
+          </div>
+
+          <!-- Price -->
+          <div class="price-tag mb-3" id="detail-price"></div>
+
+          <!-- Stock badge -->
+          <div class="mb-3" id="detail-stock-badge"></div>
+
+          <!-- Description -->
+          <p class="text-muted mb-4" id="detail-description"></p>
+
+          <!-- Quantity stepper -->
+          <div class="d-flex align-items-center gap-3 mb-3" id="qty-section">
+            <label class="form-label mb-0 fw-semibold">Qty:</label>
+            <div class="qty-stepper">
+              <button class="qty-btn" id="qty-minus">−</button>
+              <span class="qty-val" id="qty-val">1</span>
+              <button class="qty-btn" id="qty-plus">+</button>
+            </div>
+          </div>
+
+          <!-- Add to cart button -->
+          <button class="btn btn-primary w-100 mb-3" id="add-to-cart-btn">Add to Cart</button>
+          <div id="cart-alert"></div>
+        </div>
+      </div>
+
+      <!-- ── Reviews ──────────────────────────────────────── -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <h3 class="section-divider">Customer Reviews</h3>
+          <div id="reviews-container"></div>
+        </div>
+      </div>
+
+    </div><!-- /product-detail -->
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-brand">ShopEth</div>
+  <p>Your one-stop online marketplace &copy; 2025</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  const FALLBACK_IMAGES = {
+    'samsung': 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=600&q=80',
+    'xiaomi':  'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80',
+    'infinix': 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=600&q=80',
+    'tecno':   'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80',
+    'iphone':  'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=600&q=80',
+    'macbook': 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=80',
+    'dell':    'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80',
+    'asus':    'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&q=80',
+    'hp':      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80',
+    'lenovo':  'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=80',
+    'laptop':  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&q=80',
+    'earbuds': 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80',
+    'keyboard':'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80',
+    'charger': 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80',
+    'usb':     'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80',
+    'oxford':  'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80',
+    'shirt':   'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80',
+    'polo':    'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=600&q=80',
+    'trouser': 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80',
+    'chino':   'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80',
+    'jeans':   'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80',
+    'leather': 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80',
+    'jacket':  'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80',
+    'dress':   'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&q=80',
+    'cardigan':'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=80',
+    'blazer':  'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
+    'blender': 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&q=80',
+    'mixer':   'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80',
+    'air fryer':'https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&q=80',
+    'kettle':  'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80',
+    'rice':    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80',
+    'notebook':'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&q=80',
+    'pen':     'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=600&q=80',
+    'book':    'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&q=80',
+    'atomic':  'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80',
+    'pragmatic':'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&q=80',
+    'code':    'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&q=80',
+    'pillow':  'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
+    'ceramic': 'https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=600&q=80',
+    'dinner':  'https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=600&q=80',
+  };
+
+  function getProductFallback(name) {
+    const lower = (name || '').toLowerCase();
+    for (const [key, url] of Object.entries(FALLBACK_IMAGES)) {
+      if (lower.includes(key)) return url;
+    }
+    return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';
+  }
+
+  let productData = null;
+  let currentQty  = 1;
+  let maxQty      = 1;
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    renderNavAuth();
+    refreshCartBadge();
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    if (!id) return showNotFound();
+
+    const res = await products.getById(id);
+
+    document.getElementById('loading-state').classList.add('d-none');
+
+    if (!res?.success || !res.data?.product) return showNotFound();
+
+    productData = res.data;
+    renderProduct(productData);
+  });
+
+  function showNotFound() {
+    document.getElementById('loading-state').classList.add('d-none');
+    document.getElementById('not-found-state').classList.remove('d-none');
+  }
+
+  function starsHtml(avg) {
+    const full  = Math.floor(avg);
+    const half  = avg - full >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+  }
+
+  function renderProduct({ product, images, ratings, reviews }) {
+    document.title = `${product.product_name} — ShopEth`;
+
+    // Breadcrumb
+    const bc = document.getElementById('breadcrumb-nav');
+    if (product.parent_category) {
+      bc.innerHTML += `<li class="breadcrumb-item text-muted">${product.parent_category}</li>`;
+    }
+    bc.innerHTML += `<li class="breadcrumb-item text-muted">${product.category_name}</li>`;
+    bc.innerHTML += `<li class="breadcrumb-item active" aria-current="page">${product.product_name}</li>`;
+
+    // Category label
+    document.getElementById('detail-category').textContent = product.category_name;
+
+    // Name
+    document.getElementById('detail-name').textContent = product.product_name;
+
+    // Rating
+    if (ratings && ratings.review_count > 0) {
+      document.getElementById('detail-stars').textContent = starsHtml(parseFloat(ratings.average_rating));
+      document.getElementById('detail-rating-text').textContent =
+        `${ratings.average_rating} / 5 (${ratings.review_count} review${ratings.review_count !== 1 ? 's' : ''})`;
+    } else {
+      document.getElementById('detail-stars').textContent = '☆☆☆☆☆';
+      document.getElementById('detail-rating-text').textContent = 'No reviews yet';
+    }
+
+    // Price
+    document.getElementById('detail-price').textContent =
+      `${Number(product.price).toLocaleString()} ETB`;
+
+    // Stock badge
+    const stock = product.quantity_in_stock;
+    maxQty = stock;
+    let badgeHtml = '';
+    if (stock === 0) {
+      badgeHtml = `<span class="badge bg-danger">Out of Stock</span>`;
+    } else if (stock <= product.reorder_level) {
+      badgeHtml = `<span class="badge bg-warning text-dark">Low Stock — ${stock} left</span>`;
+    } else {
+      badgeHtml = `<span class="badge bg-success">In Stock</span>`;
+    }
+    document.getElementById('detail-stock-badge').innerHTML = badgeHtml;
+
+    // Description
+    document.getElementById('detail-description').textContent =
+      product.description || 'No description available.';
+
+    // Images
+    const mainWrap = document.getElementById('main-img-wrap');
+    const thumbRow = document.getElementById('thumb-row');
+
+    if (images && images.length > 0) {
+      document.getElementById('img-placeholder').remove();
+      const mainImg = document.createElement('img');
+      const mainSrc = images.find(i => i.is_main)?.image_url || images[0].image_url;
+      mainImg.src = mainSrc;
+      mainImg.alt = product.product_name;
+      mainImg.className = 'img-fluid';
+      mainImg.onerror = () => { mainImg.src = getProductFallback(product.product_name); };
+      mainWrap.appendChild(mainImg);
+
+      images.forEach((img, idx) => {
+        const thumb = document.createElement('img');
+        thumb.src = img.image_url;
+        thumb.alt = `Image ${idx + 1}`;
+        thumb.className = 'thumb' + (img.is_main ? ' active' : '');
+        thumb.onerror = () => { thumb.src = getProductFallback(product.product_name); };
+        thumb.addEventListener('click', () => {
+          mainImg.src = img.image_url;
+          document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+        thumbRow.appendChild(thumb);
+      });
+    } else {
+      // No images in DB — use fallback photo
+      document.getElementById('img-placeholder').remove();
+      const mainImg = document.createElement('img');
+      mainImg.src = getProductFallback(product.product_name);
+      mainImg.alt = product.product_name;
+      mainImg.className = 'img-fluid';
+      mainWrap.appendChild(mainImg);
+    }
+
+    // Qty stepper
+    if (stock === 0) {
+      document.getElementById('qty-section').classList.add('d-none');
+      const btn = document.getElementById('add-to-cart-btn');
+      btn.textContent = 'Out of Stock';
+      btn.disabled = true;
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-secondary');
+    } else {
+      document.getElementById('qty-minus').addEventListener('click', () => {
+        if (currentQty > 1) { currentQty--; document.getElementById('qty-val').textContent = currentQty; }
+      });
+      document.getElementById('qty-plus').addEventListener('click', () => {
+        if (currentQty < maxQty) { currentQty++; document.getElementById('qty-val').textContent = currentQty; }
+      });
+
+      document.getElementById('add-to-cart-btn').addEventListener('click', handleAddToCart);
+    }
+
+    // Reviews
+    renderReviews(reviews);
+
+    // Show the detail section
+    document.getElementById('product-detail').classList.remove('d-none');
+  }
+
+  async function handleAddToCart() {
+    if (!isLoggedIn()) { window.location.href = 'login.html'; return; }
+
+    const btn = document.getElementById('add-to-cart-btn');
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+
+    const res = await cart.add(productData.product.product_id, currentQty);
+
+    if (res?.success) {
+      btn.textContent = 'Added to Cart ✓';
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-success');
+      refreshCartBadge();
+      showCartAlert(res.message || 'Added to cart!', 'success');
+      setTimeout(() => {
+        btn.textContent = 'Add to Cart';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-primary');
+        btn.disabled = false;
+      }, 1500);
+    } else {
+      showCartAlert(res?.message || 'Could not add to cart.', 'danger');
+      btn.textContent = 'Add to Cart';
+      btn.disabled = false;
+    }
+  }
+
+  function showCartAlert(msg, type) {
+    const el = document.getElementById('cart-alert');
+    el.innerHTML = `<div class="alert alert-${type} py-2 mt-2">${msg}</div>`;
+    setTimeout(() => el.innerHTML = '', 3000);
+  }
+
+  function renderReviews(reviews) {
+    const container = document.getElementById('reviews-container');
+    if (!reviews || reviews.length === 0) {
+      container.innerHTML = `<p class="text-muted text-center py-4">No reviews yet. Be the first to review this product!</p>`;
+      return;
+    }
+    container.innerHTML = reviews.map(r => `
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <span class="fw-semibold">${r.reviewer_name}</span>
+            <span class="text-muted small">${new Date(r.review_date).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</span>
+          </div>
+          <div class="review-stars mb-2">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+          <p class="mb-0 text-muted">${r.comment || ''}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>

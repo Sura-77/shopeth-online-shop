@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopEth — Online Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* Hero */
+    .hero {
+      background: var(--espresso);
+      padding: 80px 24px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 80% 20%, rgba(201,120,58,.25) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 80%, rgba(61,31,15,.6) 0%, transparent 50%);
+    }
+    .hero-inner {
+      position: relative; max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+    }
+    .hero-text h1 { color: var(--white); margin-bottom: 16px; }
+    .hero-text h1 span { color: var(--amber-lt); }
+    .hero-text p  { color: rgba(255,255,255,.6); font-size: 1.05rem; margin-bottom: 32px; }
+    .hero-actions { display: flex; gap: 14px; }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 40px; padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .hero-stat-val { font-family: var(--font-head); font-size: 1.8rem; color: var(--amber-lt); }
+    .hero-stat-lbl { font-size: .8rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; }
+    .hero-visual {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .hero-img-block {
+      border-radius: var(--radius); overflow: hidden;
+      aspect-ratio: 1; background: rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .hero-img-block:first-child { grid-row: span 2; aspect-ratio: .6; font-size: 4rem; }
+
+    /* Category strip */
+    .category-strip { padding: 32px 0; border-bottom: 1px solid var(--ivory-dk); }
+    .category-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .category-pill {
+      padding: 8px 18px; border-radius: 99px;
+      border: 1.5px solid var(--sand);
+      background: var(--white); color: var(--espresso);
+      font-size: .85rem; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+      white-space: nowrap;
+    }
+    .category-pill:hover, .category-pill.active {
+      background: var(--amber); border-color: var(--amber); color: var(--white);
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 0; flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1; min-width: 200px; max-width: 360px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%; padding: 10px 16px 10px 42px;
+      border: 1.5px solid var(--sand); border-radius: var(--radius-sm);
+      background: var(--white); font-size: .9rem; outline: none;
+      transition: var(--transition);
+    }
+    .search-box input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(201,120,58,.12); }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 1rem;
+    }
+    .results-count { font-size: .9rem; color: var(--muted); margin-left: auto; }
+
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .hero { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ─────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">Shop<span>Eth</span></a>
+    <div class="navbar-links">
+      <a href="index.html" class="active">Products</a>
+      <a href="cart.html">Cart</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="nav-auth-links" style="display:flex;align-items:center;gap:8px;"></div>
+      <a href="cart.html" class="navbar-cart">
+        🛒 <span id="cart-count" class="cart-badge hidden">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <h1>Shop <span>Smarter,</span><br>Live Better</h1>
+      <p>Electronics, fashion, home essentials and more — all in one place, delivered to your door.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})">
+          Browse Products
+        </button>
+        <a href="register.html" class="btn btn-secondary" id="hero-register-btn">Join Free</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val" id="stat-products">—</div>
+          <div class="hero-stat-lbl">Products</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="stat-categories">10</div>
+          <div class="hero-stat-lbl">Categories</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">Fast</div>
+          <div class="hero-stat-lbl">Delivery</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img-block">📱</div>
+      <div class="hero-img-block">💻</div>
+      <div class="hero-img-block">👗</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Category Strip ─────────────────────────────────────── -->
+<div class="category-strip">
+  <div class="container">
+    <div class="category-pills" id="category-pills">
+      <div class="category-pill active" data-id="">All Products</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Products Section ───────────────────────────────────── -->
+<section class="section" id="products-section">
+  <div class="container">
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search products..." />
+      </div>
+      <select class="form-control" id="stock-filter" style="width:auto;padding:10px 16px;">
+        <option value="">All Stock</option>
+        <option value="in_stock">In Stock</option>
+        <option value="low_stock">Low Stock</option>
+        <option value="out_of_stock">Out of Stock</option>
+      </select>
+      <span class="results-count" id="results-count"></span>
+    </div>
+
+    <!-- Product grid -->
+    <div id="products-grid" class="grid-4">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-brand">ShopEth</div>
+  <p>Your one-stop online marketplace &copy; 2025</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script>
+  let currentPage = 1;
+  let currentCategory = '';
+  let searchTimeout;
+
+  // Init
+  window.addEventListener('DOMContentLoaded', async () => {
+    renderNavAuth();
+    refreshCartBadge();
+    loadCategories();
+    loadProducts();
+
+    // Hide join button if already logged in
+    if (isLoggedIn()) document.getElementById('hero-register-btn').style.display = 'none';
+
+    // Search — debounced
+    document.getElementById('search-input').addEventListener('input', e => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => { currentPage = 1; loadProducts(); }, 400);
+    });
+
+    // Stock filter
+    document.getElementById('stock-filter').addEventListener('change', () => {
+      currentPage = 1; loadProducts();
+    });
+  });
+
+  // Map product names to Unsplash fallback images
+  const FALLBACK_IMAGES = {
+    'samsung': 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&q=80',
+    'xiaomi':  'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&q=80',
+    'infinix': 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400&q=80',
+    'tecno':   'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&q=80',
+    'iphone':  'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&q=80',
+    'macbook': 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&q=80',
+    'dell':    'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&q=80',
+    'asus':    'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80',
+    'hp':      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80',
+    'lenovo':  'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&q=80',
+    'laptop':  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80',
+    'earbuds': 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80',
+    'keyboard':'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=400&q=80',
+    'charger': 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&q=80',
+    'usb':     'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&q=80',
+    'oxford':  'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&q=80',
+    'shirt':   'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&q=80',
+    'polo':    'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&q=80',
+    'trouser': 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&q=80',
+    'chino':   'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&q=80',
+    'jeans':   'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80',
+    'leather': 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80',
+    'jacket':  'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80',
+    'dress':   'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&q=80',
+    'cardigan':'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&q=80',
+    'blazer':  'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80',
+    'blender': 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&q=80',
+    'mixer':   'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80',
+    'air fryer':'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&q=80',
+    'kettle':  'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80',
+    'rice':    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80',
+    'notebook':'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400&q=80',
+    'pen':     'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=400&q=80',
+    'book':    'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&q=80',
+    'atomic':  'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80',
+    'pragmatic':'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&q=80',
+    'code':    'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&q=80',
+    'pillow':  'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80',
+    'ceramic': 'https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=400&q=80',
+    'dinner':  'https://images.unsplash.com/photo-1603199506016-b9a594b593c0?w=400&q=80',
+  };
+
+  function getProductFallback(name) {
+    const lower = (name || '').toLowerCase();
+    for (const [key, url] of Object.entries(FALLBACK_IMAGES)) {
+      if (lower.includes(key)) return url;
+    }
+    return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80';
+  }
+
+  async function loadCategories() {
+    const res = await products.getCategories();
+    if (!res?.success) return;
+
+    // Only top-level categories for pills
+    const topLevel = res.data.filter(c => !c.parent_category_id);
+    const container = document.getElementById('category-pills');
+    topLevel.forEach(cat => {
+      const pill = document.createElement('div');
+      pill.className = 'category-pill';
+      pill.dataset.id = cat.category_id;
+      pill.textContent = cat.category_name;
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentCategory = cat.category_id;
+        currentPage = 1;
+        loadProducts();
+      });
+      container.appendChild(pill);
+    });
+  }
+
+  async function loadProducts() {
+    const grid = document.getElementById('products-grid');
+    grid.innerHTML = '<div class="spinner"></div>';
+
+    const params = {
+      page:  currentPage,
+      limit: 12,
+      ...(currentCategory && { category_id: currentCategory }),
+      ...(document.getElementById('search-input').value && { search: document.getElementById('search-input').value }),
+      ...(document.getElementById('stock-filter').value  && { stock_status: document.getElementById('stock-filter').value }),
+    };
+
+    const res = await products.getAll(params);
+    if (!res?.success) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><h3>Could not load products</h3><p>Make sure the backend server is running.</p></div>`;
+      return;
+    }
+
+    const { products: list, pagination } = res.data;
+    document.getElementById('stat-products').textContent = pagination.total;
+    document.getElementById('results-count').textContent = `${pagination.total} product${pagination.total !== 1 ? 's' : ''}`;
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🔍</div><h3>No products found</h3><p>Try a different search or category.</p></div>`;
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    grid.innerHTML = list.map(p => `
+      <a href="product.html?id=${p.product_id}" class="card product-card">
+        <div class="product-card-img">
+          <img src="${p.main_image_url || getProductFallback(p.product_name)}"
+               alt="${p.product_name}"
+               onerror="this.src='${getProductFallback(p.product_name)}'" />
+          ${p.stock_status === 'out_of_stock' ? '<span class="badge-stock">Out of Stock</span>' : ''}
+          ${p.stock_status === 'low_stock'    ? '<span class="badge-stock low">Low Stock</span>'  : ''}
+        </div>
+        <div class="product-card-body">
+          <div class="product-card-category">${p.category_name}</div>
+          <div class="product-card-name">${p.product_name}</div>
+          <div class="product-card-price">
+            ${Number(p.price).toLocaleString()} <small>ETB</small>
+          </div>
+          ${p.stock_status === 'out_of_stock'
+            ? `<button disabled class="btn btn-secondary btn-sm w-100 mt-2">Out of Stock</button>`
+            : `<button class="btn btn-primary btn-sm w-100 mt-2"
+                 onclick="handleQuickAdd(event, ${p.product_id}, this)">＋ Cart</button>`
+          }
+        </div>
+      </a>
+    `).join('');
+
+    renderPagination(pagination);
+  }
+
+  function renderPagination({ page, total_pages }) {
+    const container = document.getElementById('pagination');
+    if (total_pages <= 1) { container.innerHTML = ''; return; }
+    let html = '';
+    for (let i = 1; i <= total_pages; i++) {
+      html += `<button class="page-btn${i === page ? ' active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    loadProducts();
+    document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function handleQuickAdd(e, productId, btn) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isLoggedIn()) { window.location.href = 'login.html'; return; }
+
+    btn.disabled = true;
+    btn.textContent = '…';
+
+    const res = await cart.add(productId, 1);
+
+    if (res?.success) {
+      btn.textContent = '✓ Added';
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-success');
+      refreshCartBadge();
+      setTimeout(() => {
+        btn.textContent = '＋ Cart';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-primary');
+        btn.disabled = false;
+      }, 1500);
+    } else {
+      btn.textContent = '＋ Cart';
+      btn.classList.add('btn-primary');
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

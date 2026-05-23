@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — ShopEth</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--ivory-dk); }
+    .auth-page {
+      flex: 1; display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+    .auth-panel {
+      background: var(--espresso);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 48px; gap: 24px;
+      position: relative; overflow: hidden;
+    }
+    .auth-panel::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 70%, rgba(201,120,58,.25) 0%, transparent 60%);
+    }
+    .auth-panel-content { position: relative; text-align: center; color: var(--white); }
+    .auth-panel-logo { font-family: var(--font-head); font-size: 2.4rem; color: var(--amber-lt); margin-bottom: 8px; }
+    .auth-panel-tagline { color: rgba(255,255,255,.55); font-size: 1rem; line-height: 1.6; margin-top: 8px; }
+    .auth-panel-emojis { font-size: 3.5rem; display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; }
+    .auth-form-side {
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 24px; background: var(--white);
+    }
+    .auth-box { width: 100%; max-width: 420px; }
+    .auth-box h2 { font-family: var(--font-head); margin-bottom: 6px; }
+    .auth-box .subtitle { color: var(--muted); font-size: .93rem; margin-bottom: 32px; }
+    .form-stack { display: flex; flex-direction: column; gap: 18px; }
+    .auth-footer { text-align: center; margin-top: 24px; font-size: .9rem; color: var(--muted); }
+    .auth-footer a { color: var(--amber); font-weight: 600; }
+    @media (max-width: 768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-panel { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- Left visual panel -->
+  <div class="auth-panel">
+    <div class="auth-panel-content">
+      <div class="auth-panel-emojis">🛍️ 📦 ✨</div>
+      <div class="auth-panel-logo">ShopEth</div>
+      <p class="auth-panel-tagline">
+        Ethiopia's premier online marketplace.<br>
+        Thousands of products, delivered fast.
+      </p>
+    </div>
+  </div>
+
+  <!-- Right form -->
+  <div class="auth-form-side">
+    <div class="auth-box">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in to your ShopEth account</p>
+
+      <div id="alert-box"></div>
+
+      <div class="form-stack">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" />
+        </div>
+        <button class="btn btn-primary btn-full" id="login-btn" onclick="handleLogin()">
+          Sign In
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="register.html">Create one free</a>
+      </div>
+
+      <!-- Demo credentials hint -->
+      <div style="margin-top:24px;padding:16px;background:var(--ivory-dk);border-radius:var(--radius-sm);font-size:.82rem;color:var(--muted);">
+        <strong style="color:var(--brown);">Demo credentials</strong><br>
+        Customer: <code>abel@email.com</code> / <code>test</code><br>
+        Admin: <code>sara@shopAdmin.com</code> / <code>test</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  // Redirect if already logged in
+  if (isLoggedIn()) window.location.href = 'index.html';
+
+  function showAlert(message, type = 'danger') {
+    document.getElementById('alert-box').innerHTML =
+      `<div class="alert alert-${type}" style="margin-bottom:20px;">${message}</div>`;
+  }
+
+  async function handleLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('login-btn');
+
+    if (!email || !password) return showAlert('Please enter your email and password.');
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+
+    const res = await auth.login({ email, password });
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+
+    if (!res?.success) return showAlert(res?.message || 'Login failed. Please try again.');
+
+    saveAuth(res.data.token, res.data.user);
+
+    // Redirect admin to admin panel, customers to homepage
+    window.location.href = res.data.user.role_name === 'admin' ? 'admin.html' : 'index.html';
+  }
+
+  // Allow Enter key to submit
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+</script>
+</body>
+</html>

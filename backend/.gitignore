@@ -1,0 +1,19 @@
+# ── Backend-specific ignores ──────────────────────────────────
+
+# Dependencies
+node_modules/
+
+# Environment secrets
+.env
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# OS files
+.DS_Store
+Thumbs.db

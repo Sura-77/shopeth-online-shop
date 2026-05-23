@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — ShopEth</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    body { background: var(--ivory-dk); }
+    .register-page {
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      padding: 40px 24px;
+    }
+    .register-box {
+      background: var(--white); border-radius: var(--radius-lg);
+      padding: 48px; width: 100%; max-width: 560px;
+      box-shadow: var(--shadow-lg);
+    }
+    .register-header { text-align: center; margin-bottom: 36px; }
+    .register-header .logo { font-family: var(--font-head); font-size: 1.8rem; color: var(--amber); margin-bottom: 6px; }
+    .register-header p { color: var(--muted); }
+    .form-stack { display: flex; flex-direction: column; gap: 18px; }
+    .section-divider {
+      font-size: .75rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--ivory-dk);
+    }
+    .auth-footer { text-align: center; margin-top: 24px; font-size: .9rem; color: var(--muted); }
+    .auth-footer a { color: var(--amber); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="register-page">
+  <div class="register-box">
+    <div class="register-header">
+      <div class="logo">ShopEth</div>
+      <p>Create your free account and start shopping</p>
+    </div>
+
+    <div id="alert-box"></div>
+
+    <div class="form-stack">
+      <div class="section-divider">Account Details</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Username *</label>
+          <input type="text" id="username" class="form-control" placeholder="your_username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input type="email" id="email" class="form-control" placeholder="you@email.com" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input type="password" id="password" class="form-control" placeholder="Min. 6 characters" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" id="phone" class="form-control" placeholder="+251 9XX XXX XXX" />
+        </div>
+      </div>
+
+      <div class="section-divider">Personal Info</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" id="first_name" class="form-control" placeholder="Abebe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" id="last_name" class="form-control" placeholder="Girma" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select id="gender" class="form-control">
+            <option value="">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" id="dob" class="form-control" />
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="register-btn" onclick="handleRegister()">
+        Create Account
+      </button>
+    </div>
+
+    <div class="auth-footer">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  if (isLoggedIn()) window.location.href = 'index.html';
+
+  function showAlert(message, type = 'danger') {
+    document.getElementById('alert-box').innerHTML =
+      `<div class="alert alert-${type}" style="margin-bottom:20px;">${message}</div>`;
+  }
+
+  async function handleRegister() {
+    const btn = document.getElementById('register-btn');
+    const data = {
+      username:      document.getElementById('username').value.trim(),
+      email:         document.getElementById('email').value.trim(),
+      password:      document.getElementById('password').value,
+      phone:         document.getElementById('phone').value.trim(),
+      first_name:    document.getElementById('first_name').value.trim(),
+      last_name:     document.getElementById('last_name').value.trim(),
+      gender:        document.getElementById('gender').value || null,
+      date_of_birth: document.getElementById('dob').value || null,
+    };
+
+    if (!data.username || !data.email || !data.password || !data.first_name || !data.last_name) {
+      return showAlert('Please fill in all required fields marked with *.');
+    }
+    if (data.password.length < 6) return showAlert('Password must be at least 6 characters.');
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+
+    const res = await auth.register(data);
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+
+    if (!res?.success) return showAlert(res?.message || 'Registration failed. Please try again.');
+
+    showAlert('Account created! Redirecting to login…', 'success');
+    setTimeout(() => window.location.href = 'login.html', 1800);
+  }
+</script>
+</body>
+</html>
