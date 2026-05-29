@@ -27,8 +27,14 @@ A full-stack e-commerce platform built as a Database class project. ShopEth simu
 ## Project Structure
 
 ```
-online shope system/
-├── backend/                  # Node.js/Express REST API
+shopeth-online-shop/
+├── database/
+│   ├── schema_v2.sql        # All 16 tables
+│   ├── procedures.sql       # 5 stored procedures
+│   ├── triggers.sql         # 4 triggers
+│   ├── views.sql            # 5 views
+│   └── sample_data.sql      # 36 products + seed data
+├── backend/
 │   ├── app.js
 │   ├── config/db.js
 │   ├── controllers/
@@ -36,51 +42,10 @@ online shope system/
 │   ├── middleware/
 │   ├── utils/
 │   └── tests/
-├── frontend/                 # Static HTML/CSS/JS
-│   ├── pages/
-│   ├── css/style.css
-│   └── js/api.js
-├── schema_v2.sql             # Database schema (16 tables)
-├── procedures.sql            # 5 stored procedures
-├── triggers.sql              # 4 triggers
-├── views.sql                 # 5 views
-├── sample_data.sql           # Seed data
-└── more_products.sql         # Additional 24 products
-```
-
-## Setup
-
-### 1. Database
-Run these SQL files in MySQL Workbench in order:
-```
-schema_v2.sql → procedures.sql → triggers.sql → views.sql → sample_data.sql → more_products.sql
-```
-
-Then fix demo passwords:
-```sql
-UPDATE users
-SET password = '$2a$10$jieWQyLI9tURrpCPO6dvYe0osbZlz//PaoGGSg4bw94hYCP24L17a'
-WHERE email IN (
-  'sara@shopAdmin.com', 'john@shopAdmin.com', 'abel@email.com',
-  'meron@email.com', 'kaleb@email.com', 'hana@email.com',
-  'dawit@email.com', 'tigist@email.com'
-);
-```
-
-### 2. Backend
-```bash
-cd backend
-cp .env.example .env        # fill in your DB password and JWT secret
-npm install
-npm run dev                 # starts on http://localhost:3000
-```
-
-### 3. Frontend
-Open with VS Code Live Server or:
-```bash
-cd frontend
-python -m http.server 8080
-# then open http://localhost:8080/pages/index.html
+└── frontend/
+    ├── pages/
+    ├── css/style.css
+    └── js/api.js
 ```
 
 ## Demo Credentials
@@ -88,7 +53,9 @@ python -m http.server 8080
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | sara@shopAdmin.com | test |
+| Admin | john@shopAdmin.com | test |
 | Customer | abel@email.com | test |
+| Customer | meron@email.com | test |
 
 ## API Base URL
 
